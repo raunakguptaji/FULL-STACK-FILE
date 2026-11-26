@@ -3,23 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Random Joke</title>
+    <title>University Finder</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
 </head>
 <body>
-    <main class="joke-card">
-        <div class="smile" aria-hidden="true">😄</div>
-        <p class="small-heading">A LITTLE LAUGH</p>
-        <h1>Random joke</h1>
-        <p class="intro">Need a quick laugh? Here's one for you.</p>
+    <main class="page">
+        <header class="page-header">
+            <p class="eyebrow">UNIVERSITY FINDER</p>
+            <h1>Find a university</h1>
+            <p>Enter a country to explore universities, their websites and locations.</p>
+        </header>
 
-        <div class="joke-box">
-            <p id="joke-text" aria-live="polite">Loading a joke...</p>
-        </div>
+        <form id="search-form" class="search-form">
+            <label for="country-input">Country</label>
+            <div class="search-row">
+                <input
+                    id="country-input"
+                    type="text"
+                    placeholder="For example, India"
+                    autocomplete="country-name"
+                    required
+                >
+                <button id="search-button" type="submit">Search</button>
+            </div>
+        </form>
 
-        <button id="joke-button" type="button">Get another joke</button>
-        <p class="credit">Jokes from <a href="https://jokeapi.dev/" target="_blank" rel="noopener noreferrer">JokeAPI</a></p>
+        <p id="status" class="status" aria-live="polite">Enter a country name to get started.</p>
+        <section id="results" class="results" aria-label="University results"></section>
+
+        <footer>
+            Country data: <a href="https://datahelpdesk.worldbank.org/knowledgebase/articles/898590-country-api-queries" target="_blank" rel="noopener noreferrer">World Bank</a>
+            · University data: <a href="https://openalex.org/" target="_blank" rel="noopener noreferrer">OpenAlex</a>
+        </footer>
     </main>
 </body>
 </html>
