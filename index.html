@@ -1,62 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Snakes &amp; Ladders</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Joke</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
 </head>
 <body>
-  <h1>🐍 Snakes &amp; Ladders 🪜</h1>
+    <main class="joke-card">
+        <div class="smile" aria-hidden="true">😄</div>
+        <p class="small-heading">A LITTLE LAUGH</p>
+        <h1>Random joke</h1>
+        <p class="intro">Need a quick laugh? Here's one for you.</p>
 
-  <!-- Start screen -->
-  <div id="setup" class="overlay">
-    <div class="modal">
-      <h2>New Game</h2>
-      <label for="playerCount">Number of players</label>
-      <select id="playerCount">
-        <option value="1">1 (vs Computer)</option>
-        <option value="2" selected>2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-      </select>
-      <button id="startBtn" class="btn">Start Game</button>
-    </div>
-  </div>
+        <div class="joke-box">
+            <p id="joke-text" aria-live="polite">Loading a joke...</p>
+        </div>
 
-  <!-- Winner screen -->
-  <div id="winner" class="overlay hidden">
-    <div class="modal">
-      <h2 id="winnerText">🎉 Player 1 wins!</h2>
-      <button id="playAgainBtn" class="btn">Play Again</button>
-    </div>
-  </div>
-
-  <main class="game">
-    <div class="board-wrap">
-      <div id="board" class="board">
-        <svg id="overlay" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
-        <div id="tokens"></div>
-      </div>
-    </div>
-
-    <aside class="panel">
-      <div id="players" class="players"></div>
-
-      <div class="dice-area">
-        <div id="dice" class="dice">⚀</div>
-        <button id="rollBtn" class="btn">Roll Dice</button>
-      </div>
-
-      <p id="status" class="status">Press “Start Game”.</p>
-
-      <div class="log-title">Game log</div>
-      <ul id="log" class="log"></ul>
-
-      <button id="restartBtn" class="btn secondary">Restart</button>
-    </aside>
-  </main>
-
-  <script src="game.js"></script>
+        <button id="joke-button" type="button">Get another joke</button>
+        <p class="credit">Jokes from <a href="https://jokeapi.dev/" target="_blank" rel="noopener noreferrer">JokeAPI</a></p>
+    </main>
 </body>
 </html>
