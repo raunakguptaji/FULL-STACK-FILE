@@ -1,124 +1,97 @@
-const form = document.getElementById("search-form");
-const countryInput = document.getElementById("country-input");
-const searchButton = document.getElementById("search-button");
-const statusMessage = document.getElementById("status");
-const results = document.getElementById("results");
 
-const countriesUrl = "https://api.worldbank.org/v2/country?format=json&per_page=400";
-const universitiesUrl = "https://api.openalex.org/institutions";
+const form = document.getElementById("productForm");
+const productList = document.getElementById("productList");
 
-let countries = null;
+// Display Products
+async function loadProducts() {
+    const res = await fetch("/products");
+    const products = await res.json();
 
-async function getCountries() {
-    if (countries) {
-        return countries;
-    }
+    productList.innerHTML = "";
 
-    const response = await fetch(countriesUrl);
-    if (!response.ok) {
-        throw new Error("Could not load the country list.");
-    }
+    products.forEach(product => {
+        const div = document.createElement("div");
+        div.className = "product";
 
-    const data = await response.json();
-    if (!Array.isArray(data[1])) {
-        throw new Error("The country list was not in the expected format.");
-    }
+        div.innerHTML = `
+            <h3>${product.name}</h3>
+            <p>Price: ₹${product.price}</p>
+            <p>${product.description}</p>
 
-    countries = data[1];
-    return countries;
-}
+            <button class="edit-btn" onclick="editProduct(${product.id})">
+                Edit
+            </button>
 
-async function getCountryCode(countryName) {
-    const countryList = await getCountries();
-    const country = countryList.find(function (item) {
-        return item.name.toLowerCase() === countryName.toLowerCase();
-    });
+            <button class="delete-btn" onclick="deleteProduct(${product.id})">
+                Delete
+            </button>
+        `;
 
-    return country ? country.iso2Code : "";
-}
-
-function showUniversities(universityList) {
-    results.innerHTML = "";
-
-    universityList.forEach(function (university) {
-        const card = document.createElement("article");
-        card.className = "university";
-
-        const name = document.createElement("h2");
-        name.textContent = university.display_name;
-
-        const region = document.createElement("p");
-        const state = university.geo && university.geo.region;
-        region.textContent = "State / region: " + (state || "Not listed");
-
-        const websiteText = document.createElement("p");
-        websiteText.textContent = "Website: ";
-
-        if (university.homepage_url) {
-            const website = document.createElement("a");
-            website.href = university.homepage_url;
-            website.textContent = university.homepage_url;
-            website.target = "_blank";
-            website.rel = "noopener noreferrer";
-            websiteText.appendChild(website);
-        } else {
-            websiteText.append("Not listed");
-        }
-
-        card.append(name, region, websiteText);
-        results.appendChild(card);
+        productList.appendChild(div);
     });
 }
 
-async function searchUniversities(event) {
-    event.preventDefault();
+// Add Product
+form.addEventListener("submit", async function(e) {
+    e.preventDefault();
 
-    const countryName = countryInput.value.trim();
-    if (!countryName) {
-        statusMessage.textContent = "Please enter a country name.";
-        return;
-    }
+    const product = {
+        name: document.getElementById("name").value,
+        price: document.getElementById("price").value,
+        description: document.getElementById("description").value
+    };
 
-    searchButton.disabled = true;
-    statusMessage.textContent = "Searching for universities...";
-    results.innerHTML = "";
+    await fetch("/products", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(product)
+    });
 
-    try {
-        const countryCode = await getCountryCode(countryName);
-        if (!countryCode) {
-            statusMessage.textContent = "Country not found. Check the spelling and try again.";
-            return;
-        }
+    form.reset();
+    loadProducts();
+});
 
-        const url = new URL(universitiesUrl);
-        url.searchParams.set("filter", "country_code:" + countryCode + ",type:education");
-        url.searchParams.set("per-page", "50");
-        url.searchParams.set("select", "display_name,homepage_url,geo");
+// Delete Product
+async function deleteProduct(id) {
+    await fetch(`/products/${id}`, {
+        method: "DELETE"
+    });
 
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error("Could not load university data.");
-        }
-
-        const data = await response.json();
-        if (!Array.isArray(data.results)) {
-            throw new Error("University data was not in the expected format.");
-        }
-
-        if (data.results.length === 0) {
-            statusMessage.textContent = "No universities were found for " + countryName + ".";
-            return;
-        }
-
-        showUniversities(data.results);
-        statusMessage.textContent =
-            "Showing " + data.results.length + " universities in " + countryName + ".";
-    } catch (error) {
-        console.error("University search failed:", error);
-        statusMessage.textContent = "Could not load results. Check your internet connection and try again.";
-    } finally {
-        searchButton.disabled = false;
-    }
+    loadProducts();
 }
 
-form.addEventListener("submit", searchUniversities);
+// Update Product
+async function editProduct(id) {
+    const res = await fetch("/products");
+    const products = await res.json();
+
+    const product = products.find(p => p.id === id);
+
+    const name = prompt("Enter Product Name:", product.name);
+    if (name === null) return;
+
+    const price = prompt("Enter Product Price:", product.price);
+    if (price === null) return;
+
+    const description = prompt("Enter Description:", product.description);
+    if (description === null) return;
+
+    await fetch(`/products/${id}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            name: name,
+            price: price,
+            description: description
+        })
+    });
+
+    loadProducts();
+}
+
+// Load Products on Page
+loadProducts();
